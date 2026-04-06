@@ -13,11 +13,11 @@ export default function CourseLearnPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [course,          setCourse]          = useState(null);
-  const [progress,        setProgress]        = useState(null);
-  const [activeLesson,    setActiveLesson]    = useState(0);
-  const [marking,         setMarking]         = useState(false);
-  const [loading,         setLoading]         = useState(true);
+  const [course, setCourse] = useState(null);
+  const [progress, setProgress] = useState(null);
+  const [activeLesson, setActiveLesson] = useState(0);
+  const [marking, setMarking] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const init = async () => {
@@ -38,7 +38,7 @@ export default function CourseLearnPage() {
       }
     };
     init();
-  }, [courseId]);
+  }, [courseId, navigate]);
 
   const isLessonComplete = (lessonId) => {
     if (!progress?.completedLessons) return false;
@@ -53,13 +53,16 @@ export default function CourseLearnPage() {
 
     setMarking(true);
     try {
-      const { data } = await api.patch(`/progress/${courseId}/complete`, {
+      const { data } = await api.post(`/progress/${courseId}/complete`, {
         lessonId: lesson._id,
       });
+
       setProgress(data.data);
 
       if (data.data.isCompleted) {
-        toast.success('🎉 Congratulations! You completed this course!', { duration: 5000 });
+        toast.success('🎉 Congratulations! You completed this course!', {
+          duration: 5000,
+        });
       } else {
         toast.success('Lesson marked complete!');
       }
@@ -72,14 +75,14 @@ export default function CourseLearnPage() {
 
   const goNext = () => {
     if (activeLesson < course.lessons.length - 1) {
-      setActiveLesson(a => a + 1);
+      setActiveLesson((a) => a + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const goPrev = () => {
     if (activeLesson > 0) {
-      setActiveLesson(a => a - 1);
+      setActiveLesson((a) => a - 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -96,16 +99,15 @@ export default function CourseLearnPage() {
   if (!course) return null;
 
   const currentLesson = course.lessons[activeLesson];
-  const percent        = progress?.percentComplete || 0;
-  const totalLessons   = course.lessons.length;
-  const doneLessons    = progress?.completedLessons?.length || 0;
+  const percent = progress?.percentComplete || 0;
+  const totalLessons = course.lessons.length;
+  const doneLessons = progress?.completedLessons?.length || 0;
 
   return (
     <main className="pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top bar */}
-        <div className="flex items-center justify-between py-4 border-b border-white/5 mb-6
-                        flex-wrap gap-3">
+        <div className="flex items-center justify-between py-4 border-b border-white/5 mb-6 flex-wrap gap-3">
           <Link to="/dashboard" className="btn-ghost text-sm -ml-2">
             <ArrowLeft className="w-4 h-4" /> Dashboard
           </Link>
@@ -113,8 +115,7 @@ export default function CourseLearnPage() {
           <div className="flex items-center gap-3 flex-1 min-w-0 justify-center px-4">
             <div className="flex-1 max-w-xs bg-surface-800 rounded-full h-2">
               <div
-                className="bg-gradient-to-r from-brand-500 to-emerald-500 h-2 rounded-full
-                           transition-all duration-700"
+                className="bg-gradient-to-r from-brand-500 to-emerald-500 h-2 rounded-full transition-all duration-700"
                 style={{ width: `${percent}%` }}
               />
             </div>
@@ -171,8 +172,7 @@ export default function CourseLearnPage() {
 
                 <div className="flex-shrink-0">
                   {isLessonComplete(currentLesson?._id) ? (
-                    <div className="flex items-center gap-2 text-emerald-400 text-sm font-medium
-                                    bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-xl">
+                    <div className="flex items-center gap-2 text-emerald-400 text-sm font-medium bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-xl">
                       <CheckCircle className="w-4 h-4" />
                       Completed
                     </div>
@@ -216,8 +216,7 @@ export default function CourseLearnPage() {
             {progress?.isCompleted && (
               <div className="card p-6 border-emerald-500/30 bg-emerald-500/5">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center
-                                  justify-center flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
                     <Trophy className="w-6 h-6 text-emerald-400" />
                   </div>
                   <div>
@@ -242,18 +241,18 @@ export default function CourseLearnPage() {
               <h3 className="font-semibold text-white mb-3 text-sm">Course content</h3>
               <div className="space-y-1 max-h-[65vh] overflow-y-auto scrollbar-hide pr-1">
                 {course.lessons.map((lesson, idx) => {
-                  const done    = isLessonComplete(lesson._id);
+                  const done = isLessonComplete(lesson._id);
                   const isActive = idx === activeLesson;
 
                   return (
                     <button
                       key={lesson._id || idx}
                       onClick={() => setActiveLesson(idx)}
-                      className={`w-full flex items-center gap-2.5 p-2.5 rounded-xl text-left
-                                  transition-all duration-150 text-sm
-                                  ${isActive
-                                    ? 'bg-brand-500/20 border border-brand-500/30 text-white'
-                                    : 'text-white/60 hover:text-white hover:bg-white/5 border border-transparent'
+                      className={`w-full flex items-center gap-2.5 p-2.5 rounded-xl text-left transition-all duration-150 text-sm
+                                  ${
+                                    isActive
+                                      ? 'bg-brand-500/20 border border-brand-500/30 text-white'
+                                      : 'text-white/60 hover:text-white hover:bg-white/5 border border-transparent'
                                   }`}
                     >
                       <div className="flex-shrink-0">

@@ -1,4 +1,4 @@
-# LearnPro Client
+# platform Client
 
 Frontend for **LearnPro**, a full-stack online learning platform where users can browse courses, search and filter content, enroll in free or paid courses, track progress, and complete lessons through an interactive learning dashboard.
 
